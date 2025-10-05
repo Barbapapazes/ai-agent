@@ -8,4 +8,10 @@ export default defineNuxtConfig({
     mcpEndpoint: '',
   },
   compatibilityDate: '2025-10-05',
+  nitro: {
+    cloudflare: {
+      deployConfig: true,
+      nodeCompat: true,
+    }
+  }
 })

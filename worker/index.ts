@@ -4,8 +4,8 @@ import { z } from 'zod/v3'
 
 export class OurMcp extends McpAgent {
   server = new McpServer({
-      name: 'ai-agent',
-      version: '1.0.0'
+    name: 'ai-agent',
+    version: '1.0.0'
   })
 
   async init() {
@@ -25,7 +25,8 @@ export class OurMcp extends McpAgent {
             }
           ]
         }
-    })
+      }
+    )
   }
 }
 
