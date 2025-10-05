@@ -1,8 +1,8 @@
-import { streamText, convertToModelMessages, tool, stepCountIs } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
-import { defineEventHandler, readBody, defineLazyEventHandler } from 'h3'
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js'
+import { convertToModelMessages, experimental_createMCPClient, stepCountIs, streamText } from 'ai'
+import { defineEventHandler, defineLazyEventHandler, readBody } from 'h3'
 import { useRuntimeConfig } from 'nitropack/runtime'
-import { z } from 'zod'
 
 export default defineLazyEventHandler(() => {
   const runtimeConfig = useRuntimeConfig()
@@ -14,24 +14,19 @@ export default defineLazyEventHandler(() => {
   return defineEventHandler(async (event) => {
     const { messages } = await readBody(event)
 
+    const httpTransport = new StreamableHTTPClientTransport(
+      new URL(runtimeConfig.mcpEndpoint)
+    )
+    const httpClient = await experimental_createMCPClient({
+      transport: httpTransport
+    })
+    const tools = await httpClient.tools()
+
     return streamText({
       model: model('gpt-5-nano'),
       system: `You are a helpful assistant. You can use the tool to add two numbers together.`,
-      tools: {
-        addition: tool({
-          description: 'Adds two numbers',
-          inputSchema: z.object({
-            a: z.number().describe('The first number'),
-            b: z.number().describe('The second number'),
-          }),
-          execute: ({ a, b }) => ({
-            a,
-            b,
-            result: a + b
-          }),
-        }),
-      },
       stopWhen: stepCountIs(2),
+      tools,
       messages: convertToModelMessages(messages),
     }).toUIMessageStreamResponse()
   })
