@@ -25,9 +25,19 @@ const handleSubmit = (e: Event) => {
             <template v-for="(part, index) in message.parts" :key="index">
               <MDC v-if="part.type === 'text'" :value="part.text" :cache-key="message.id + '-' + index" unwrap="p" />
               <div v-else-if="part.type === 'reasoning'"> {{ part.state === 'streaming' ? 'Thinking...' : 'Thinking complete' }} </div>
-              <div v-else-if="part.type === 'dynamic-tool' && part.toolName === 'addition'">
-                {{ part.state === 'input-streaming' ? 'Adding: ' + part.input.a + ' + ' + part.input.b : 'Addition complete: ' + part.input.a + ' + ' + part.input.b }}
-              </div>
+                <div v-else-if="part.type === 'dynamic-tool' && part.toolName === 'addition'">
+                <template v-if="part.state === 'input-streaming'">
+                  <template v-if="part.input && (part.input as { a: number, b: number }).a !== undefined && (part.input as { a: number, b: number }).b !== undefined">
+                  Adding: {{ (part.input as { a: number, b: number }).a }} + {{ (part.input as { a: number, b: number }).b }}
+                  </template>
+                  <template v-else>
+                  Adding...
+                  </template>
+                </template>
+                <template v-else>
+                  Addition complete: {{ (part.input as { a: number, b: number }).a }} + {{ (part.input as { a: number, b: number }).b }}
+                </template>
+                </div>
             </template>
           </template>
         </UChatMessages>
