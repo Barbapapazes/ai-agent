@@ -1,0 +1,18 @@
+{
+  "name": "ai-agent",
+  "private": true,
+  "scripts": {
+    "build": "nitro build",
+    "dev": "nitro dev"
+  },
+  "devDependencies": {
+    "h3": "^1.15.4",
+    "nitropack": "^2.12.4"
+  },
+  "packageManager": "pnpm@10.17.1+sha512.17c560fca4867ae9473a3899ad84a88334914f379be46d455cbf92e5cf4b39d34985d452d2583baf19967fa76cb5c17bc9e245529d0b98745721aa7200ecaf7a",
+  "dependencies": {
+    "@ai-sdk/openai": "^2.0.42",
+    "ai": "^5.0.60",
+    "zod": "^4.1.11"
+  }
+}
