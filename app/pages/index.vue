@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Chat } from '@ai-sdk/vue'
-import { getTextFromMessage } from '@nuxt/ui/utils/ai'
 
 const input = ref('')
 
@@ -23,7 +22,13 @@ const handleSubmit = (e: Event) => {
       <UContainer>
         <UChatMessages :messages="chat.messages" :status="chat.status">
           <template #content="{ message }">
-            <MDC :value="getTextFromMessage(message)" :cache-key="message.id" unwrap="p" />
+            <template v-for="(part, index) in message.parts" :key="index">
+              <MDC v-if="part.type === 'text'" :value="part.text" :cache-key="message.id + '-' + index" unwrap="p" />
+              <div v-else-if="part.type === 'reasoning'"> {{ part.state === 'streaming' ? 'Thinking...' : 'Thinking complete' }} </div>
+              <div v-else-if="part.type === 'dynamic-tool' && part.toolName === 'addition'">
+                {{ part.state === 'input-streaming' ? 'Adding: ' + part.input.a + ' + ' + part.input.b : 'Addition complete: ' + part.input.a + ' + ' + part.input.b }}
+              </div>
+            </template>
           </template>
         </UChatMessages>
       </UContainer>

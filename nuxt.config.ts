@@ -7,4 +7,5 @@ export default defineNuxtConfig({
     openAiApiKey: '',
     mcpEndpoint: '',
   },
+  compatibilityDate: '2025-10-05',
 })
