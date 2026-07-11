@@ -6,22 +6,6 @@
   "compatibility_flags": [
     "nodejs_compat"
   ],
-  "migrations": [
-    {
-      "new_sqlite_classes": [
-        "OurMcp"
-      ],
-      "tag": "v1"
-    }
-  ],
-  "durable_objects": {
-    "bindings": [
-      {
-        "class_name": "OurMcp",
-        "name": "MCP_OBJECT"
-      }
-    ]
-  },
   "observability": {
     "enabled": true,
     "head_sampling_rate": 0.1

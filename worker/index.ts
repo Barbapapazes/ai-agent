@@ -1,37 +1,54 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { McpAgent } from 'agents/mcp'
-import { z } from 'zod/v3'
+import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js'
+import { z } from 'zod'
 
-export class OurMcp extends McpAgent {
-  server = new McpServer({
+function createServer() {
+  const server = new McpServer({
     name: 'ai-agent',
-    version: '1.0.0'
+    version: '1.0.0',
   })
 
-  async init() {
-    this.server.tool (
-      'addition',
-      'Adds two numbers',
-      {
-        a: z.number().describe('The first number'),
-        b: z.number().describe('The second number')
-      },
-      async (params) => {
-        return {
-          content: [
-            {
-              type: 'text',
-              text: String(params.a + params.b)
-            }
-          ]
-        }
+  server.tool(
+    'addition',
+    'Adds two numbers',
+    {
+      a: z.number().describe('The first number'),
+      b: z.number().describe('The second number'),
+    },
+    async (params) => {
+      return {
+        content: [
+          {
+            type: 'text',
+            text: String(params.a + params.b),
+          },
+        ],
       }
-    )
-  }
+    },
+  )
+
+  return server
 }
 
 export default {
-  fetch(request: Request, env: Env, ctx: ExecutionContext) {
-    return OurMcp.serve('/').fetch(request, env, ctx)
+  async fetch(request: Request) {
+    if (new URL(request.url).pathname !== '/mcp') {
+      return new Response('Not found', { status: 404 })
+    }
+
+    const server = createServer()
+    const transport = new WebStandardStreamableHTTPServerTransport({
+      sessionIdGenerator: undefined,
+      enableJsonResponse: true,
+    })
+
+    await server.connect(transport)
+
+    try {
+      return await transport.handleRequest(request)
+    } finally {
+      await transport.close()
+      await server.close()
+    }
   },
-}
+} satisfies ExportedHandler<Env>
