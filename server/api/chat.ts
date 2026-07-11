@@ -22,12 +22,16 @@ export default defineLazyEventHandler(() => {
     })
     const tools = await httpClient.tools()
 
-    return streamText({
+    const result = streamText({
       model: model('gpt-5-nano'),
       system: `You are a helpful assistant. You can use the tool to add two numbers together.`,
       stopWhen: stepCountIs(2),
       tools,
       messages: convertToModelMessages(messages),
-    }).toUIMessageStreamResponse()
+      onFinish: () => httpClient.close(),
+      onAbort: () => httpClient.close(),
+    })
+
+    return result.toUIMessageStreamResponse()
   })
 })
