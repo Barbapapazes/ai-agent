@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody } from "h3";
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
-import { z } from 'zod/v3'
+import { z } from 'zod'
 
 export default defineEventHandler(async (event) => {
   const server = new McpServer({
